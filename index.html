@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>init_birthday.exe</title>
+    <style>
+        /* Сброс стилей */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0d0d0d; /* Глубокий черный фон */
+            color: #d4d4d4; /* Светло-серый текст по умолчанию */
+            font-family: 'Courier New', Courier, monospace; /* Шрифт как в консоли */
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Верхняя панель (как в VS Code) */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #1e1e1e;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #333;
+            display: flex;
+            gap: 20px;
+            color: #858585;
+            z-index: 10;
+        }
+
+        .top-bar span.active {
+            color: #4ec9b0;
+            border-bottom: 2px solid #4ec9b0;
+            padding-bottom: 8px;
+        }
+
+        /* Левая часть: Редактор кода */
+        .editor-container {
+            flex: 1;
+            padding: 60px 20px 20px 20px;
+            display: flex;
+            overflow-y: auto;
+            border-right: 1px solid #333;
+        }
+
+        .line-numbers {
+            color: #5c6370;
+            text-align: right;
+            padding-right: 15px;
+            user-select: none;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .code-content {
+            font-size: 1rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        /* Подсветка синтаксиса (имитация) */
+        .keyword { color: #569cd6; } /* Синий */
+        .function { color: #dcdcaa; } /* Желтый */
+        .string { color: #ce9178; } /* Оранжевый */
+        .comment { color: #6a9955; font-style: italic; } /* Зеленый */
+        .variable { color: #9cdcfe; } /* Голубой */
+
+        /* Мигающий курсор */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 18px;
+            background-color: #d4d4d4;
+            animation: blink 1s step-end infinite;
+            vertical-align: bottom;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Правая часть: Окно вывода (Output) */
+        .output-container {
+            width: 400px;
+            background-color: #0d0d0d;
+            padding: 60px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #333;
+        }
+
+        .output-header {
+            color: #858585;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Кнопка RUN */
+        .run-btn {
+            background-color: #2d6a4f;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .run-btn:hover {
+            background-color: #40916c;
+        }
+
+        .run-btn:disabled {
+            background-color: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        /* Окно с результатом (Гифка) */
+        .result-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            text-align: center;
+        }
+
+        .result-screen.show {
+            opacity: 1;
+        }
+
+        .gif-wrapper {
+            /* Делаем так, чтобы фон гифки сливался с черным */
+            mix-blend-mode: screen; 
+            margin-bottom: 20px;
+        }
+
+        .gif-wrapper img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+
+        .success-msg {
+            color: #4ec9b0;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            text-shadow: 0 0 5px rgba(78, 201, 176, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Верхняя панель -->
+    <div class="top-bar">
+        <span class="active">main.cpp</span>
+        <span>birthday_gift.js</span>
+        <span>secret.txt</span>
+    </div>
+
+    <!-- Левая часть: Код -->
+    <div class="editor-container">
+        <div class="line-numbers">
+            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18
+        </div>
+        <div class="code-content" id="codeArea">
+            <span class="comment">// Инициализация скрытого модуля...</span><br>
+            <span class="keyword">#include</span> <span class="string">&lt;love.h&gt;</span><br>
+            <span class="keyword">#include</span> <span class="string">&lt;memories.h&gt;</span><br><br>
+            <span class="keyword">int</span> <span class="function">main</span>() {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">user</span> = <span class="string">"My Favorite Person"</span>;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">bool</span> isBirthday = <span class="keyword">true</span>;<br><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (isBirthday) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">execute_surprise</span>(<span class="variable">user</span>);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// Ожидание запуска...</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="function">0</span>;<br>
+            }
+            <span class="cursor"></span>
+        </div>
+    </div>
+
+    <!-- Правая часть: Терминал / Вывод -->
+    <div class="output-container">
+        <div class="output-header">
+            <span>Terminal / Output</span>
+            <button class="run-btn" id="runButton" onclick="runCode()">
+                ▶ Run Code
+            </button>
+        </div>
+
+        <!-- Скрытый экран с результатом -->
+        <div class="result-screen" id="resultScreen">
+            <div class="gif-wrapper">
+                
+                <img src="c:\Users\Admin\Downloads\ascii-art (2).gif" alt="ASCII GIF" id="birthdayGif">
+            </div>
+            <div class="success-msg">
+                [Process completed successfully]<br>
+                Happy Birthday! ♥
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function runCode() {
+            // 1. Меняем кнопку, чтобы показать процесс компиляции
+            const btn = document.getElementById('runButton');
+            btn.innerHTML = "Compiling...";
+            btn.disabled = true;
+            btn.style.backgroundColor = "#333";
+
+            // 2. Имитируем задержку загрузки (2 секунды), как будто код реально выполняется
+            setTimeout(() => {
+                
+                // 3. Показываем гифку (добавляем класс show для плавного появления)
+                const resultScreen = document.getElementById('resultScreen');
+                resultScreen.classList.add('show');
+
+                // 4. Меняем текст кнопки на успешный
+                btn.innerHTML = "✓ Executed";
+                btn.style.backgroundColor = "#2d6a4f";
+
+                // 5. (Опционально) Можно добавить эффект, чтобы гифка начала двигаться
+                // Для этого нужно перезагрузить src картинки
+                const gif = document.getElementById('birthdayGif');
+                const originalSrc = gif.src;
+                gif.src = "";
+                gif.src = originalSrc;
+
+            }, 1500); // Задержка 1.5 секунды
+        }
+    </script>
+</body>
+</html>
